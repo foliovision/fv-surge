@@ -55,8 +55,17 @@ function config( $key ) {
 		/**
 		 * Use if you do not want to store separate cache versions depending on the page cookies
 		 * and you do not want to send cookies from cache.
+		 *
+		 * Note: Must be used together with exclude_cookies = [ 'wordpress_logged_in_{your COOKIEHASH}' ]
 		 */
 		'ignore_all_cookies' => false,
+
+		/**
+		 * Use to make sure logged in users are not cached. 
+		 *
+		 * Note: Must be used together with ignore_all_cookies = true
+		 */
+		'exclude_cookies' => [ /* 'wordpress_logged_in_{your COOKIEHASH}'*/ ],
 	];
 
 	// Run a custom configuration file.
