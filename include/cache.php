@@ -44,9 +44,12 @@ $ob_callback = function( $contents ) {
 
 		$headers[ $name ][] = $value;
 
-		if ( strtolower( $name ) == 'set-cookie' ) {
-			$skip = true;
-			break;
+		// Cookies should only stop the cache from being saved if not using ignore_all_cookies config var
+		if ( ! config( 'ignore_all_cookies' ) ) {
+			if ( strtolower( $name ) == 'set-cookie' ) {
+				$skip = true;
+				break;
+			}
 		}
 
 		if ( strtolower( $name ) == 'cache-control' ) {

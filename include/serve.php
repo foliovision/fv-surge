@@ -74,6 +74,11 @@ if ( $flags && ! empty( $meta['flags'] ) ) {
 http_response_code( $meta['code'] );
 
 foreach ( $meta['headers'] as $name => $values ) {
+	// Do not send cookies from cache if ignore_all_cookies config var is true
+	if ( strcasecmp( $name, 'Set-Cookie' ) == 0 && config( 'ignore_all_cookies' ) ) {
+		continue;
+	}
+
 	foreach( (array) $values as $value ) {
 		header( "{$name}: {$value}", false );
 	}
