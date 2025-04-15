@@ -50,6 +50,9 @@ $ob_callback = function( $contents ) {
 		}
 
 		if ( strtolower( $name ) == 'cache-control' ) {
+			/**
+			 * Note: This is how logged in users are excluded from caching, or pages like wp-admin/... and wp-login.php
+			 */
 			if ( stripos( $value, 'no-cache' ) !== false || stripos( $value, 'max-age=0' ) !== false ) {
 				$skip = true;
 				break;

@@ -152,6 +152,9 @@ function key() {
 		}
 	}
 
+	/**
+	 * Note: Using cookies as the cache key effectivelly ensures none of the logged-in users are cached.
+	 */
 	$cache_key['cookies'] = $cookies;
 
 	return $cache_key;
