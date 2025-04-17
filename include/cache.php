@@ -93,6 +93,7 @@ $ob_callback = function( $contents ) {
 		'expires' => time() + $ttl,
 		'flags' => array_unique( flag() ),
 		'path' => $key['path'],
+		'debug' => $key,
 	];
 
 	$meta_json = json_encode( $meta );
