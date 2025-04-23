@@ -63,6 +63,20 @@ $ob_callback = function( $contents ) {
 		}
 	}
 
+	// If exclude_cookies config var is set, check if any such cookie is present. We match the prefix of the cookie name.
+	if ( is_array( config( 'exclude_cookies' ) ) ) {
+		if ( is_array( $_COOKIE ) ) {
+			foreach ( $_COOKIE as $name => $value ) {
+				foreach ( config( 'exclude_cookies' ) as $cookie_prefix ) {
+					if ( stripos( $name, $cookie_prefix ) === 0 ) {
+						$skip = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	if ( ! empty( $_SERVER['HTTP_AUTHORIZATION'] ) ) {
 		$skip = true;
 	}
