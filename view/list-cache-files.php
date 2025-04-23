@@ -271,7 +271,7 @@ function render_cache_list_page() {
 					echo "<td class='time'>{$mod_time}</td>\n";
 					echo "<td class='expires'>{$expires_time}</td>\n";
 					echo "<td class='actions'>";
-					echo "<button class='button button-small delete-cache' data-file_path='" . esc_attr( $file_path ) . "'>" . esc_html__( 'Delete', 'surge' ) . "</button>";
+					echo "<button class='button button-small delete-cache' data-file_path='" . esc_attr( $file_path ) . "'>" . esc_html__( 'Purge', 'surge' ) . "</button>";
 					echo "</td>\n";
 					echo "</tr>\n";
 				}
@@ -285,10 +285,6 @@ function render_cache_list_page() {
 			// Handle cache deletion via AJAX
 			$('.delete-cache').on('click', function(e) {
 				e.preventDefault();
-				
-				if ( ! confirm( '<?php esc_html_e( 'Are you sure you want to delete this cache file?', 'surge' ); ?>' ) ) {
-					return;
-				}
 				
 				var button = $(this);
 				button.prop('disabled', true);
