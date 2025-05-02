@@ -7,9 +7,9 @@
 
 namespace Surge;
 
-$filename = WP_CONTENT_DIR . '/plugins/surge/include/serve.php';
+$filename = WP_CONTENT_DIR . '/plugins/fv-surge/include/serve.php';
 if ( defined( 'WP_PLUGIN_DIR' ) ) {
-	$filename = WP_PLUGIN_DIR . '/surge/include/serve.php';
+	$filename = WP_PLUGIN_DIR . '/fv-surge/include/serve.php';
 }
 
 include_once( $filename );
