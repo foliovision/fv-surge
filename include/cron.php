@@ -41,45 +41,38 @@ add_action( 'surge_delete_expired', function() {
 				continue;
 			}
 
-			$files[] = "{$cache_dir}/{$level}/{$item}";
-		}
-	}
+			$filename = "{$cache_dir}/{$level}/{$item}";
 
-	foreach ( $files as $filename ) {
-		// Some files after scandir may already be gone/renamed.
-		if ( ! file_exists( $filename ) ) {
-			continue;
-		}
+			$stat = @stat( $filename );
+			if ( ! $stat ) {
+				continue;
+			}
 
-		$stat = @stat( $filename );
-		if ( ! $stat ) {
-			continue;
-		}
+			// Skip files modified in the last minute.
+			if ( $stat['mtime'] + MINUTE_IN_SECONDS > $time ) {
+				continue;
+			}
 
-		// Skip files modified in the last minute.
-		if ( $stat['mtime'] + MINUTE_IN_SECONDS > $time ) {
-			continue;
-		}
+			// Empty file.
+			if ( $stat['size'] < 1 ) {
+				unlink( $filename );
+				$deleted++;
+				continue;
+			}
 
-		// Empty file.
-		if ( $stat['size'] < 1 ) {
+			$f = fopen( $filename, 'rb' );
+			$meta = read_metadata( $f );
+			fclose( $f );
+
+			// This cache entry is still valid.
+			if ( $meta && ! empty( $meta['expires'] ) && $meta['expires'] > $time ) {
+				continue;
+			}
+
+			// Delete the cache entry
 			unlink( $filename );
 			$deleted++;
-			continue;
 		}
-
-		$f = fopen( $filename, 'rb' );
-		$meta = read_metadata( $f );
-		fclose( $f );
-
-		// This cache entry is still valid.
-		if ( $meta && ! empty( $meta['expires'] ) && $meta['expires'] > $time ) {
-			continue;
-		}
-
-		// Delete the cache entry
-		unlink( $filename );
-		$deleted++;
 	}
 
 	$end = microtime( true );
