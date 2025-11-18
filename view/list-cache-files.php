@@ -132,6 +132,8 @@ function render_cache_list_page() {
 	$cache_files = scanDirectory( $cache_dir );
 	$total_files = count( $cache_files );
 
+	$table_limit = 100;
+
 	// Process each file
 	$results = array();
 
@@ -214,6 +216,9 @@ function render_cache_list_page() {
 			<p><?php echo esc_html( sprintf( __( 'Found %d cache files.', 'surge' ), $total_files ) ); ?></p>
 			<p><?php echo esc_html( sprintf( __( 'Total expired: %d', 'surge' ), $count_expired ) ); ?></p>
 			<p><?php echo esc_html( sprintf( __( 'Peak memory usage: %s MB', 'surge' ), number_format( memory_get_peak_usage() / 1024 / 1024, 2 ) ) ); ?></p>
+			<?php if ( $total_files > $table_limit ) {
+			include __DIR__ . '/show-more-links.php';
+		} ?>
 		</div>
 
 		<table class="wp-list-table widefat fixed striped">
@@ -231,7 +236,17 @@ function render_cache_list_page() {
 			<tbody>
 				<?php
 				$current_site = '';
+
+				$count = 0;
+
 				foreach ($results as $result) {
+
+					if ( $count >= $table_limit && ! isset( $_GET['show_all'] ) ) {
+						break;
+					}
+
+					$count++;
+
 					$expired = $result['expires'] < time();
 					$expired_class = $expired ? ' class="expired"' : '';
 					
@@ -278,6 +293,7 @@ function render_cache_list_page() {
 				?>
 			</tbody>
 		</table>
+		<?php include __DIR__ . '/show-more-links.php'; ?>
 	</div>
 
 	<script type="text/javascript">
