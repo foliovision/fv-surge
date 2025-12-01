@@ -47,6 +47,12 @@ add_action( 'transition_post_status', function( $status, $old_status, $post ) {
 // Here we attempt to guess which posts appear on this requests and set flags
 // accordingly. We also attempt to set more generic flags based on the query.
 add_filter( 'the_posts', function( $posts, $query ) {
+
+	// Do not flag posts coming from other queries, such as YARPP related posts showing below post content.
+	if ( ! $query->is_main_query() ) {
+		return $posts;
+	}
+
 	$post_ids = wp_list_pluck( $posts, 'ID' );
 	$blog_id = get_current_blog_id();
 
