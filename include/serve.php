@@ -14,6 +14,11 @@ if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 	return;
 }
 
+if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+	header( 'X-Cache: bypass' );
+	return;
+}
+
 include_once( __DIR__ . '/common.php' );
 
 header( 'X-Cache: miss' );
