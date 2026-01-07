@@ -108,4 +108,5 @@ header( 'X-Cache: hit' );
 event( 'request', [ 'meta' => $meta ] );
 fpassthru( $f ); // Pass the remaining bytes to the output.
 fclose( $f );
+echo "<!-- Served from cache: {$level}/{$cache_key} @ " . $meta['expires'] . "-->";
 die();
