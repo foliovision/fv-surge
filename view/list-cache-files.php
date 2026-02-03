@@ -245,8 +245,6 @@ function render_cache_list_page() {
 						break;
 					}
 
-					$count++;
-
 					$expired = $result['expires'] < time();
 					$expired_class = $expired ? ' class="expired"' : '';
 					
@@ -265,10 +263,17 @@ function render_cache_list_page() {
 					}
 
 					$full_url = $result['url'];
+
 					if ( ! empty( $query_vars ) ) {
 						$full_url .= '?' . implode( '&', $query_vars );
 					}
-					
+
+					if ( ! empty( $_GET['search_exact'] ) && $full_url !== $_GET['search_exact'] ) {
+						continue;
+					}
+
+					$count++;
+
 					$mod_time = date( 'Y-m-d H:i:s', filemtime( $result['file'] ) );
 					$expires_time = date( 'Y-m-d H:i:s', $result['expires'] );
 
