@@ -159,6 +159,7 @@ function render_cache_list_page() {
 				'is_mobile'  => $is_mobile,
 				'file'       => $file,
 				'code'       => $data['code'],
+				'debug'      => $data['debug'],
 				'expires'    => $data['expires'],
 			];
 		}
