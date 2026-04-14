@@ -16,6 +16,21 @@ if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 
 include_once( __DIR__ . '/common.php' );
 
+// If exclude_cookies config var is set, check if any such cookie is present. We match the prefix of the cookie name.
+if ( is_array( config( 'exclude_cookies' ) ) ) {
+	if ( is_array( $_COOKIE ) ) {
+		foreach ( $_COOKIE as $name => $value ) {
+			foreach ( config( 'exclude_cookies' ) as $cookie_prefix ) {
+				if ( stripos( $name, $cookie_prefix ) === 0 ) {
+					header( 'X-Cache: bypass' );
+					status( 'bypass' );
+					return;
+				}
+			}
+		}
+	}
+}
+
 header( 'X-Cache: miss' );
 status( 'miss' );
 $cache_key = md5( json_encode( key() ) );
@@ -78,6 +93,11 @@ if ( $flags && ! empty( $meta['flags'] ) ) {
 http_response_code( $meta['code'] );
 
 foreach ( $meta['headers'] as $name => $values ) {
+	// Do not send cookies from cache if ignore_all_cookies config var is true
+	if ( strcasecmp( $name, 'Set-Cookie' ) == 0 && config( 'ignore_all_cookies' ) ) {
+		continue;
+	}
+
 	foreach( (array) $values as $value ) {
 		header( "{$name}: {$value}", false );
 	}

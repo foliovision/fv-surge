@@ -45,9 +45,12 @@ $ob_callback = function( $contents ) {
 
 		$headers[ $name ][] = $value;
 
+		// Cookies should only stop the cache from being saved if not using ignore_all_cookies config var
+		if ( ! config( 'ignore_all_cookies' ) ) {
 		if ( strtolower( $name ) == 'set-cookie' ) {
 			$skip = true;
 			break;
+			}
 		}
 
 		if ( strtolower( $name ) == 'cache-control' ) {
@@ -57,6 +60,20 @@ $ob_callback = function( $contents ) {
 			if ( stripos( $value, 'no-cache' ) !== false || stripos( $value, 'max-age=0' ) !== false ) {
 				$skip = true;
 				break;
+			}
+		}
+	}
+
+	// If exclude_cookies config var is set, check if any such cookie is present. We match the prefix of the cookie name.
+	if ( is_array( config( 'exclude_cookies' ) ) ) {
+		if ( is_array( $_COOKIE ) ) {
+			foreach ( $_COOKIE as $name => $value ) {
+				foreach ( config( 'exclude_cookies' ) as $cookie_prefix ) {
+					if ( stripos( $name, $cookie_prefix ) === 0 ) {
+						$skip = true;
+						break;
+					}
+				}
 			}
 		}
 	}
