@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Surge
+ * Plugin Name: FV Surge
  * Plugin URI: https://github.com/kovshenin/surge
  * Description: A fast and simple page caching plugin for WordPress
  * Author: Konstantin Kovshenin
