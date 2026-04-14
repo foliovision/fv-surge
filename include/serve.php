@@ -116,4 +116,5 @@ if ( config( 'fpassthru_alt' ) ) {
 }
 
 fclose( $f );
+echo "<!-- Served from cache: {$level}/{$cache_key} @ " . $meta['expires'] . "-->";
 die();
