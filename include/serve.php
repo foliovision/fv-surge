@@ -16,6 +16,18 @@ if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 
 include_once( __DIR__ . '/common.php' );
 
+/**
+ * Ignore wp-admin and admin-ajax.php
+ *
+ * This is important in case you have The Newsletter plugin and you are ignoring the action query
+ * argument, as it uses admin-ajax.php with GET requests.
+ */
+if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+	header( 'X-Cache: bypass' );
+	status( 'bypass' );
+	return;
+}
+
 // If exclude_cookies config var is set, check if any such cookie is present. We match the prefix of the cookie name.
 if ( is_array( config( 'exclude_cookies' ) ) ) {
 	if ( is_array( $_COOKIE ) ) {
