@@ -12,4 +12,17 @@ if ( defined( 'WP_PLUGIN_DIR' ) ) {
 	$filename = WP_PLUGIN_DIR . '/fv-surge/include/serve.php';
 }
 
-include_once( $filename );
+if ( file_exists( $filename ) ) {
+	include_once( $filename );
+
+// Fix plugin path if downloaded from Github
+} else{
+	$filename = WP_CONTENT_DIR . '/plugins/fv-surge-main/include/serve.php';
+	if ( defined( 'WP_PLUGIN_DIR' ) ) {
+		$filename = WP_PLUGIN_DIR . '/fv-surge-main/include/serve.php';
+	}
+
+	if ( file_exists( $filename ) ) {
+		include_once( $filename );
+	}
+}
