@@ -182,6 +182,14 @@ function key() {
 		}
 	}
 
+	if ( config( 'cache_cookies' ) ) {
+		foreach ( $_COOKIE as $key => $value ) {
+			if ( in_array( $key, config( 'cache_cookies' ) ) ) {
+				$cookies[ $key ] = $value;
+			}
+		}
+	}
+
 	/**
 	 * Note: Using cookies as the cache key effectivelly ensures none of the logged-in users are cached.
 	 */
