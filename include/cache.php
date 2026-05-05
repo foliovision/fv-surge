@@ -45,11 +45,11 @@ $ob_callback = function( $contents ) {
 
 		$headers[ $name ][] = $value;
 
-		// Cookies should only stop the cache from being saved if not using ignore_all_cookies config var
-		if ( ! config( 'ignore_all_cookies' ) ) {
-		if ( strtolower( $name ) == 'set-cookie' ) {
-			$skip = true;
-			break;
+		// Cookies should only stop the cache from being saved if not using ignore_all_cookies_except config var
+		if ( ! config( 'ignore_all_cookies_except' ) ) {
+			if ( strtolower( $name ) == 'set-cookie' ) {
+				$skip = true;
+				break;
 			}
 		}
 
@@ -64,11 +64,11 @@ $ob_callback = function( $contents ) {
 		}
 	}
 
-	// If exclude_cookies config var is set, check if any such cookie is present. We match the prefix of the cookie name.
-	if ( is_array( config( 'exclude_cookies' ) ) ) {
+	// If ignore_all_cookies_except config var is set, check if any such cookie is present. We match the prefix of the cookie name.
+	if ( is_array( config( 'ignore_all_cookies_except' ) ) ) {
 		if ( is_array( $_COOKIE ) ) {
 			foreach ( $_COOKIE as $name => $value ) {
-				foreach ( config( 'exclude_cookies' ) as $cookie_prefix ) {
+				foreach ( config( 'ignore_all_cookies_except' ) as $cookie_prefix ) {
 					if ( stripos( $name, $cookie_prefix ) === 0 ) {
 						$skip = true;
 						break;

@@ -63,16 +63,9 @@ function config( $key ) {
 		 * Use if you do not want to store separate cache versions depending on the page cookies
 		 * and you do not want to send cookies from cache.
 		 *
-		 * Note: Must be used together with exclude_cookies = [ 'wordpress_logged_in_{your COOKIEHASH}' ]
+		 * FV Surge sets this one by default, adding the wordpress_logged_in_... and comment_author_... cookies.
 		 */
-		'ignore_all_cookies' => false,
-
-		/**
-		 * Use to make sure logged in users are not cached. 
-		 *
-		 * Note: Must be used together with ignore_all_cookies = true
-		 */
-		'exclude_cookies' => [ /* 'wordpress_logged_in_{your COOKIEHASH}'*/ ],
+		'ignore_all_cookies_except' => [ /*'wordpress_logged_in_{your COOKIEHASH}', 'comment_author_email_{your COOKIEHASH}'*/ ],
 	];
 
 	// Run a custom configuration file.
@@ -173,8 +166,8 @@ function key() {
 	// Clean up and normalize cookies.
 	$cookies = [];
 
-	// Only cache response cookies if ignore_all_cookies config var is not set
-	if ( ! config( 'ignore_all_cookies' ) ) {
+	// Only cache response cookies if ignore_all_cookies_except config var is not set
+	if ( ! config( 'ignore_all_cookies_except' ) ) {
 		foreach ( $_COOKIE as $key => $value ) {
 
 			// Ignore cookies that begin with a _, assume they're JS-only.

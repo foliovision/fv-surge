@@ -4,8 +4,7 @@ We love the Surge cache plugin for WordPress, however it’s hard to setup for e
 
 Improvements over [original Surge plugin](https://github.com/kovshenin/surge):
 
-* New configuration variable: `ignore_all_cookies` – set to true, and all cookies will be ignored for caching
-* New configuration variable: `exclude_cookies` – use to exclude logged in users and commenters from caching. Has to be used **together** with `ignore_all_cookies`.
+* New configuration variable: `ignore_all_cookies_except` – set to array with the WordPress login cookie and Commenter cookie names and all other cookies will be ignored for caching
 * Added wp-admin bar button to purge the cache
 * Added wp-admin Tools page that lists the cache content, letting you purge individual entries
 * Added wp-admin Settings page (just lists the configuration variables for easier checking)

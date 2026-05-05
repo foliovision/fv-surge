@@ -28,11 +28,11 @@ if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 	return;
 }
 
-// If exclude_cookies config var is set, check if any such cookie is present. We match the prefix of the cookie name.
-if ( is_array( config( 'exclude_cookies' ) ) ) {
+// If ignore_all_cookies_except config var is set, check if any such cookie is present. We match the prefix of the cookie name.
+if ( is_array( config( 'ignore_all_cookies_except' ) ) ) {
 	if ( is_array( $_COOKIE ) ) {
 		foreach ( $_COOKIE as $name => $value ) {
-			foreach ( config( 'exclude_cookies' ) as $cookie_prefix ) {
+			foreach ( config( 'ignore_all_cookies_except' ) as $cookie_prefix ) {
 				if ( stripos( $name, $cookie_prefix ) === 0 ) {
 					header( 'X-Cache: bypass' );
 					status( 'bypass' );
@@ -105,8 +105,8 @@ if ( $flags && ! empty( $meta['flags'] ) ) {
 http_response_code( $meta['code'] );
 
 foreach ( $meta['headers'] as $name => $values ) {
-	// Do not send cookies from cache if ignore_all_cookies config var is true
-	if ( strcasecmp( $name, 'Set-Cookie' ) == 0 && config( 'ignore_all_cookies' ) ) {
+	// Do not send cookies from cache if ignore_all_cookies_except config var is set
+	if ( strcasecmp( $name, 'Set-Cookie' ) == 0 && config( 'ignore_all_cookies_except' ) ) {
 		continue;
 	}
 
