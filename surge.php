@@ -21,6 +21,15 @@ if ( defined( 'WP_CACHE' ) && WP_CACHE ) {
 
 // Load more files later when necessary.
 add_action( 'plugins_loaded', function() {
+	// Re-install if COOKIEHASH changed and stale cache cookie names may be present.
+	$cookie_hash = defined( 'COOKIEHASH' ) ? (string) constant( 'COOKIEHASH' ) : '';
+	$written_cookie_hash = (string) get_option( 'surge_cookiehash_written', '' );
+
+	if ( $cookie_hash !== $written_cookie_hash ) {
+		delete_option( 'surge_installed' );
+	}
+
+	// Run the installation
 	if ( false === get_option( 'surge_installed', false ) ) {
 		if ( add_option( 'surge_installed', 0 ) ) {
 			require_once( __DIR__ . '/include/install.php' );

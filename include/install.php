@@ -27,8 +27,11 @@ if ( ! $ret ) {
 // Create the cache directory
 wp_mkdir_p( CACHE_DIR );
 
+$cookie_hash         = defined( 'COOKIEHASH' ) ? (string) constant( 'COOKIEHASH' ) : '';
+$written_cookie_hash = get_option( 'surge_cookiehash_written', '' );
+
 // Nothing to do if WP_CACHE is already on or forced skip.
-if ( defined( 'WP_CACHE' ) && WP_CACHE && defined( 'WP_CACHE_CONFIG' ) && WP_CACHE_CONFIG || apply_filters( 'surge_skip_config_update', false ) ) {
+if ( defined( 'WP_CACHE' ) && WP_CACHE && defined( 'WP_CACHE_CONFIG' ) && WP_CACHE_CONFIG && $cookie_hash === $written_cookie_hash || apply_filters( 'surge_skip_config_update', false ) ) {
 	update_option( 'surge_installed', 1 );
 	return;
 }
@@ -45,7 +48,6 @@ if ( ! file_exists( ABSPATH . 'wp-config.php' )
 // Create a default surge-cache-config.php if it does not exist.
 $cache_config_path = dirname( $config_path ) . '/surge-cache-config.php';
 if ( ! file_exists( $cache_config_path ) ) {
-	$cookie_hash = (string) COOKIEHASH;
 	$cache_config = sprintf(
 		"<?php\n"
 		. "/**\n"
@@ -67,6 +69,47 @@ if ( ! file_exists( $cache_config_path ) ) {
 	if ( false === $cache_config_bytes ) {
 		update_option( 'surge_installed', 4 );
 		return;
+	}
+
+	update_option( 'surge_cookiehash_written', $cookie_hash );
+
+} else {
+	if ( $cookie_hash !== $written_cookie_hash ) {
+		$cache_config = file_get_contents( $cache_config_path );
+		if ( false === $cache_config ) {
+			update_option( 'surge_installed', 4 );
+			return;
+		}
+
+		$cache_config_updated = preg_replace(
+			'/\bwordpress_logged_in_[A-Za-z0-9]+\b/',
+			'wordpress_logged_in_' . $cookie_hash,
+			$cache_config
+		);
+		if ( null === $cache_config_updated ) {
+			update_option( 'surge_installed', 4 );
+			return;
+		}
+
+		$cache_config_updated = preg_replace(
+			'/\bcomment_author_[A-Za-z0-9]+\b/',
+			'comment_author_' . $cookie_hash,
+			$cache_config_updated
+		);
+		if ( null === $cache_config_updated ) {
+			update_option( 'surge_installed', 4 );
+			return;
+		}
+
+		if ( $cache_config !== $cache_config_updated ) {
+			$cache_config_bytes = file_put_contents( $cache_config_path, $cache_config_updated );
+			if ( false === $cache_config_bytes ) {
+				update_option( 'surge_installed', 4 );
+				return;
+			}
+		}
+
+		update_option( 'surge_cookiehash_written', $cookie_hash );
 	}
 }
 
