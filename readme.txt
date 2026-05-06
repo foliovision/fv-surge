@@ -5,7 +5,7 @@ Tags: cache, performance, caching
 Requires at least: 5.7
 Tested up to: 7.0
 Requires PHP: 7.3
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -65,6 +65,9 @@ It seems like your hosting provider disabled the fpassthru() function, likely by
 If you like Surge, consider giving us a [star on GitHub](https://github.com/kovshenin/surge) and a review on WordPress.org.
 
 == Changelog ==
+
+= 1.2.1 =
+* Bug fix in SURGE_ config constants
 
 = 1.2.0 =
 * Added fpassthru_alt configuration option for compatibility with hosts that do not support fpassthru
