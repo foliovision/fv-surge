@@ -66,6 +66,11 @@ function config( $key ) {
 		 * FV Surge sets this one by default, adding the wordpress_logged_in_... and comment_author_... cookies.
 		 */
 		'ignore_all_cookies_except' => [ /*'wordpress_logged_in_{your COOKIEHASH}', 'comment_author_email_{your COOKIEHASH}'*/ ],
+
+		/**
+		 * The following cookies will create a separate cache version for each of them IF ignore_all_cookies_except is set.
+		 */
+		'cache_cookies' => [ /*'pll_language', 'something_else'*/ ],
 	];
 
 	// Run a custom configuration file.
@@ -166,8 +171,18 @@ function key() {
 	// Clean up and normalize cookies.
 	$cookies = [];
 
+	if ( config( 'ignore_all_cookies_except' ) ) {
+		// We can still vary cache for certain cookies
+		if ( config( 'cache_cookies' ) ) {
+			foreach ( $_COOKIE as $key => $value ) {
+				if ( in_array( $key, config( 'cache_cookies' ) ) ) {
+					$cookies[ $key ] = $value;
+				}
+			}
+		}
+
 	// Only cache response cookies if ignore_all_cookies_except config var is not set
-	if ( ! config( 'ignore_all_cookies_except' ) ) {
+	} else {
 		foreach ( $_COOKIE as $key => $value ) {
 
 			// Ignore cookies that begin with a _, assume they're JS-only.
@@ -177,14 +192,6 @@ function key() {
 			}
 
 			if ( ! in_array( $key, config( 'ignore_cookies' ) ) ) {
-				$cookies[ $key ] = $value;
-			}
-		}
-	}
-
-	if ( config( 'cache_cookies' ) ) {
-		foreach ( $_COOKIE as $key => $value ) {
-			if ( in_array( $key, config( 'cache_cookies' ) ) ) {
 				$cookies[ $key ] = $value;
 			}
 		}
