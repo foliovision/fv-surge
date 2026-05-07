@@ -55,12 +55,11 @@ if ( ! file_exists( $cache_config_path ) ) {
 		. " *\n"
 		. " * @package Surge\n"
 		. " */\n\n"
-		. "return [\n"
-		. "\t'ignore_all_cookies_except' => [\n"
-		. "\t\t'wordpress_logged_in_%s',\n"
-		. "\t\t'comment_author_%s',\n"
-		. "\t],\n"
-		. "];\n",
+		. "// 12 hours lifetime for cache\n"
+    . "\$config['ttl'] = 86400 / 2;\n\n"
+		. "// Ignore WordPress loging and commeter cookies\n"
+		. "\$config['ignore_all_cookies_except'] = [ 'wordpress_logged_in_%s', 'comment_author_%s' ];\n\n"
+		. "return \$config;\n",
 		$cookie_hash,
 		$cookie_hash
 	);
