@@ -48,53 +48,32 @@ function render_cache_list_page() {
 	}
 
 	/**
-	 * Single Surge PHP cache files start with <?php exit; ?> followed by some junk, then JSON and then HTML,
-	 * we need to extract the JSON from the file.
+	 * Read cache metadata from a Surge cache file.
 	 *
-	 * We read the first 100000 bytes of the file to find the JSON data.
-	 * We could read less, but then we might not get the whole JSON data.
+	 * Cache files use the same length-prefixed JSON header as serve.php: see read_metadata()
+	 * in include/common.php (<?php exit; ?> + 4-byte length + JSON + body).
 	 *
-	 * @param string $file_path The path to the cache file
+	 * @param string $file_path Absolute path to the cache file.
 	 *
-	 * @return string The JSON data from the file
+	 * @return array|null Decoded metadata or null on failure.
 	 */
 	function get_data_from_surge_cache_file( $file_path ) {
-		$json_str = '';
+		$f = fopen( $file_path, 'rb' );
 
-		// Read the first part of the file (we only need the header)
-		$content = file_get_contents( $file_path, false, null, 0, 100000 );
-		
-		// Find the position of the JSON data start
-		$start_pos  = strpos( $content, '<?php exit; \?\>') + strlen('<?php exit; \?\>' );
-		$json_start = strpos ($content, '{', $start_pos );
-
-		if ( $json_start !== false ) {
-			// JSON ends where cached HTML starts
-			$html_start = strpos($content, '<!DOCTYPE html>', $json_start);
-			
-			if ( $html_start !== false ) {
-				$json_str = substr($content, $json_start, $html_start - $json_start);
-			} else {
-				// ...or JSON ends where cached XML starts
-				$xml_start = strpos($content, '<?xml ', $json_start);
-
-				if ( $xml_start !== false ) {
-					$json_str = substr($content, $json_start, $xml_start - $json_start);
-				} else {
-					$json_str = substr($content, $json_start);
-				}
-			}
-		} else {
-			echo '<div class="notice notice-warning"><p>' . esc_html(sprintf(__('Could not find JSON data in file %s', 'surge'), $file_path)) . '</p></div>';
+		if ( ! $f ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html( sprintf( __( 'Could not open cache file %s', 'surge' ), $file_path ) ) . '</p></div>';
+			return null;
 		}
 
-		$json = json_decode($json_str, true);
+		$meta = read_metadata( $f );
+		fclose( $f );
 
-		if (!$json) {
-			echo '<div class="notice notice-warning"><p>' . esc_html(sprintf(__('Could not decode JSON data in file %s', 'surge'), $file_path)) . '</p></div>';
+		if ( ! $meta ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html( sprintf( __( 'Could not read metadata from file %s', 'surge' ), $file_path ) ) . '</p></div>';
+			return null;
 		}
 
-		return $json;
+		return $meta;
 	}
 
 	// Function to recursively scan directories
