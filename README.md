@@ -4,7 +4,7 @@ We love the Surge cache plugin for WordPress, however it’s hard to setup for e
 
 Improvements over [original Surge plugin](https://github.com/kovshenin/surge):
 
-* Default configuration file `surge-cache-config.php` gets created when installing plugin (check the surge_installed wp_option) with:
+* Default configuration file `surge-cache-config.php` gets created when installing plugin (if it does not exist) with:
   * cache time set to 12 hours
   * all cookies except WordPress login cookie and Commenter cookie ignored
 * New configuration variable: `ignore_all_cookies_except` – set to array with the WordPress login cookie and Commenter cookie names and all other cookies will be ignored for caching
