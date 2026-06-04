@@ -57,9 +57,10 @@ if ( ! file_exists( $cache_config_path ) ) {
 		. " */\n\n"
 		. "// 12 hours lifetime for cache\n"
     . "\$config['ttl'] = 86400 / 2;\n\n"
-		. "// Ignore WordPress login and commenter cookies\n"
-		. "\$config['ignore_all_cookies_except'] = [ 'wordpress_logged_in_%s', 'comment_author_%s' ];\n\n"
+		. "// Do not cache if WordPress login, commenter or Easy Digital Downloads cookies are present\n"
+		. "\$config['ignore_all_cookies_except'] = [\n\t'wordpress_logged_in_%s',\n\t'comment_author_%s',\n\t'edd_session_%s'\n];\n\n"
 		. "return \$config;\n",
+		$cookie_hash,
 		$cookie_hash,
 		$cookie_hash
 	);
@@ -84,15 +85,16 @@ if ( ! file_exists( $cache_config_path ) ) {
 		$patterns = [
 			'/\bwordpress_logged_in_[A-Za-z0-9]+\b/' => 'wordpress_logged_in_' . $cookie_hash,
 			'/\bcomment_author_[A-Za-z0-9]+\b/'      => 'comment_author_' . $cookie_hash,
+			'/\bedd_session_[A-Za-z0-9]+\b/'         => 'edd_session_' . $cookie_hash,
 		];
 
 		$cache_config_updated = $cache_config;
 		foreach ( $patterns as $pattern => $replacement ) {
 			$result = preg_replace( $pattern, $replacement, $cache_config_updated );
 			if ( null === $result ) {
-			update_option( 'surge_installed', 4 );
-			return;
-		}
+				update_option( 'surge_installed', 4 );
+				return;
+			}
 			$cache_config_updated = $result;
 		}
 
