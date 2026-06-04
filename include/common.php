@@ -76,7 +76,12 @@ function config( $key ) {
 	// Run a custom configuration file.
 	if ( defined( 'WP_CACHE_CONFIG' ) ) {
 		$_config = ( function( $config ) {
-			$_config = (array) include( WP_CACHE_CONFIG );
+			try {
+				$_config = (array) include( constant( 'WP_CACHE_CONFIG' ) );
+			} catch ( \Throwable $e ) {
+				error_log( 'Surge Error: Failed to load WP_CACHE_CONFIG: ' . constant( 'WP_CACHE_CONFIG' ) . ': ' . $e->getMessage() );
+				$_config = [];
+			}
 			return $_config;
 		} ) ( $config );
 
