@@ -72,6 +72,7 @@ if ( ! file_exists( $cache_config_path ) ) {
 
 	update_option( 'surge_cookiehash_written', $cookie_hash );
 
+// Update the cache config if the cookie hash has changed.
 } else {
 	if ( $cookie_hash !== $written_cookie_hash ) {
 		$cache_config = file_get_contents( $cache_config_path );
@@ -80,24 +81,19 @@ if ( ! file_exists( $cache_config_path ) ) {
 			return;
 		}
 
-		$cache_config_updated = preg_replace(
-			'/\bwordpress_logged_in_[A-Za-z0-9]+\b/',
-			'wordpress_logged_in_' . $cookie_hash,
-			$cache_config
-		);
-		if ( null === $cache_config_updated ) {
+		$patterns = [
+			'/\bwordpress_logged_in_[A-Za-z0-9]+\b/' => 'wordpress_logged_in_' . $cookie_hash,
+			'/\bcomment_author_[A-Za-z0-9]+\b/'      => 'comment_author_' . $cookie_hash,
+		];
+
+		$cache_config_updated = $cache_config;
+		foreach ( $patterns as $pattern => $replacement ) {
+			$result = preg_replace( $pattern, $replacement, $cache_config_updated );
+			if ( null === $result ) {
 			update_option( 'surge_installed', 4 );
 			return;
 		}
-
-		$cache_config_updated = preg_replace(
-			'/\bcomment_author_[A-Za-z0-9]+\b/',
-			'comment_author_' . $cookie_hash,
-			$cache_config_updated
-		);
-		if ( null === $cache_config_updated ) {
-			update_option( 'surge_installed', 4 );
-			return;
+			$cache_config_updated = $result;
 		}
 
 		if ( $cache_config !== $cache_config_updated ) {
