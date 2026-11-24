@@ -47,54 +47,56 @@ function admin_bar_purge_print_script() {
 	$nonce    = wp_create_nonce( 'surge-purge-full-cache' );
 	?>
 	<script>
-	jQuery( function( $ ) {
-		var purging = false;
-		var defaultLabel = <?php echo wp_json_encode( __( 'Surge Purge', 'surge' ) ); ?>;
+	document.addEventListener( 'DOMContentLoaded', function() {
+		jQuery( function( $ ) {
+			var purging = false;
+			var defaultLabel = <?php echo wp_json_encode( __( 'Surge Purge', 'surge' ) ); ?>;
 
-		$( '#wp-admin-bar-surge-cache-purge' ).on(
-			'click',
-			function( e ) {
-				e.preventDefault();
-				var $row = $( this );
-				var $link = $row.find( 'a.ab-item' ).length ? $row.find( 'a.ab-item' ) : $row.find( 'a' );
+			$( '#wp-admin-bar-surge-cache-purge' ).on(
+				'click',
+				function( e ) {
+					e.preventDefault();
+					var $row = $( this );
+					var $link = $row.find( 'a.ab-item' ).length ? $row.find( 'a.ab-item' ) : $row.find( 'a' );
 
-				if ( purging ) {
-					return false;
-				}
+					if ( purging ) {
+						return false;
+					}
 
-				purging = true;
-				$link.text( <?php echo wp_json_encode( __( 'Purging…', 'surge' ) ); ?> );
+					purging = true;
+					$link.text( <?php echo wp_json_encode( __( 'Purging…', 'surge' ) ); ?> );
 
-				$.post(
-					<?php echo wp_json_encode( $ajax_url ); ?>,
-					{
-						action: 'surge_purge_full_cache',
-						nonce: <?php echo wp_json_encode( $nonce ); ?>
-					},
-					function( response ) {
-						purging = false;
+					$.post(
+						<?php echo wp_json_encode( $ajax_url ); ?>,
+						{
+							action: 'surge_purge_full_cache',
+							nonce: <?php echo wp_json_encode( $nonce ); ?>
+						},
+						function( response ) {
+							purging = false;
 
-						if ( response.success ) {
-							$link.text( response.data );
-							setTimeout( function() {
-								$link.text( defaultLabel );
-							}, 2000 );
-						} else {
-							$link.text( defaultLabel );
-
-							if ( response.data ) {
-								alert( response.data );
+							if ( response.success ) {
+								$link.text( response.data );
+								setTimeout( function() {
+									$link.text( defaultLabel );
+								}, 2000 );
 							} else {
-								alert( <?php echo wp_json_encode( __( 'Surge cache purge failed.', 'surge' ) ); ?> );
+								$link.text( defaultLabel );
+
+								if ( response.data ) {
+									alert( response.data );
+								} else {
+									alert( <?php echo wp_json_encode( __( 'Surge cache purge failed.', 'surge' ) ); ?> );
+								}
 							}
 						}
-					}
-				);
+					);
 
-				return false;
-			}
-		);
-	} );
+					return false;
+				}
+			);
+		} );
+	});
 	</script>
 	<?php
 }
