@@ -49,7 +49,9 @@ add_action( 'transition_post_status', function( $status, $old_status, $post ) {
 add_filter( 'the_posts', function( $posts, $query ) {
 
 	// Do not flag posts coming from other queries, such as YARPP related posts showing below post content.
-	if ( ! $query->is_main_query() ) {
+	// Unless the query is the homepage, as that one might be special.
+	// For a standard archive page, the main query has all the posts IDs already.
+	if ( ! is_page_on_front( $query ) && ! $query->is_main_query() ) {
 		return $posts;
 	}
 

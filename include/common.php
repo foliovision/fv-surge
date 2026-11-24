@@ -335,3 +335,25 @@ function status( $new_status = null ) {
 	$status = $new_status;
 	return $status;
 }
+
+/**
+ * Determine if the current page is the "Your homepage displays" -> "A static page" -> "Homepage" page.
+ */
+function is_page_on_front( $query ) {
+	static $is_homepage;
+
+	if ( isset( $is_homepage ) ) {
+		return $is_homepage;
+	}
+
+	$homepage_id = get_option( 'page_on_front', false );
+
+	$is_homepage = false;
+	if ( ! empty( $query->query_vars['p'] ) ) {
+		if ( absint( $query->query_vars['p'] ) === absint( $homepage_id ) ) {
+			$is_homepage = true;
+		}
+	}
+
+	return $is_homepage;
+}
