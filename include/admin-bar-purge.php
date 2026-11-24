@@ -117,11 +117,7 @@ add_action(
 			require_once \ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
 			$fs = new \WP_Filesystem_Direct( false );
-			$r  = $fs->rmdir( CACHE_DIR, true );
-
-			if ( ! $r ) {
-				wp_send_json_error( __( 'Surge cache folder could not be deleted. Please check file permissions.', 'surge' ) );
-			}
+			$fs->rmdir( CACHE_DIR, true );
 		}
 
 		wp_send_json_success( __( 'Success!', 'surge' ) );
